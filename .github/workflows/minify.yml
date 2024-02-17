@@ -1,0 +1,37 @@
+name: Minify CSS and JS
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'src/css/**'
+      - 'src/js/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup NodeJS
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install Node packages/dependencies
+      run: npm install
+
+    - name: Minify CSS
+      run: npm run minify:css
+
+    - name: Minify JS
+      run: npm run minify:javascript
+
+    - name: Commit minified files
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'actions@github.com'
+        git add src/css/style.min.css src/js/app.min.js
+        git commit -m "Minify CSS and JS" || echo "No changes to commit"
+        git push
